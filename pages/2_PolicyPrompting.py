@@ -25,14 +25,14 @@ chat_llm = ChatOpenAI(temperature=0.0)
 st.title("Policy Prompting")
 
 
-def generation(user_input,text):
+def generation(prompt,target):
     if os.path.exists('Policy_Document.doc'):
         doc = docx.Document('Policy_Document.doc')
     else:
         doc = docx.Document()
-    title_template = user_input
+    title_template = prompt
     prompt = ChatPromptTemplate.from_template(template=title_template)
-    messages = prompt.format_messages(topic=text)
+    messages = prompt.format_messages(topic=target)
     response = chat_llm(messages)
     content = str(response.content)
     doc.add_paragraph(content)
@@ -42,11 +42,6 @@ def generation(user_input,text):
     b64 = base64.b64encode(doc_data).decode()
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="policy.doc">Download Result</a>'
     st.markdown(href, unsafe_allow_html=True)
-    
-    
-    
-    
-    
     
     
 # Function to convert DOC to Text
@@ -62,18 +57,20 @@ doc_file = st.sidebar.file_uploader("Choose a DOC file", type=[".doc", ".docx"])
 st.subheader("Policy Document")
 if doc_file is not None:
     # Convert the DOC to text
-    text = convert_doc_to_text(doc_file)
-    st.write(text)
+    target = convert_doc_to_text(doc_file)
+    st.write(target)
 else:
     st.write("Upload a DOC file to convert it to text.")
 
+target=st.text_area("Write the Requirements')
+
 # Text area for user input
 st.subheader("User Prompt")
-user_input = st.text_area("Enter your Prompt here:")
+prompt = st.text_area("Enter your Prompt here:")
 
 # Save user input to a file
 if st.button("Submit"):
-    generation(user_input,text)
+    generation(prompt,target)
     
 
 
