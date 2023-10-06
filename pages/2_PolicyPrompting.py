@@ -37,6 +37,9 @@ def generation(prompt,target):
     content = str(response.content)
     doc.add_paragraph(content)
     doc.save('Policy.doc')
+    result=convert_doc_to_text('Policy.doc')
+    st.write(result)
+    
     with open('Policy.doc', 'rb') as f:
         doc_data = f.read()
     b64 = base64.b64encode(doc_data).decode()
