@@ -62,7 +62,7 @@ if doc_file is not None:
 else:
     st.write("Upload a DOC file to convert it to text.")
 
-target=st.text_area("Write the Requirements')
+target=st.text_area("Write the Requirements")
 
 # Text area for user input
 st.subheader("User Prompt")
