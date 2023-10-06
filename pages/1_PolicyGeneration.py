@@ -14,8 +14,8 @@ from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from dotenv import load_dotenv
 
 load_dotenv()
-# os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+# os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
 # Initialize chat model
 chat_llm = ChatOpenAI(temperature=0.0)
@@ -139,7 +139,7 @@ def document_generator(df):
     with open('Policy_Document.doc', 'rb') as f:
         doc_data = f.read()
     b64 = base64.b64encode(doc_data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.doc">Download Result</a>'
+    href = f'<a href="data:application/octet-stream;base64,{b64}" download="Policy_Document.doc">Download Result</a>'
     st.markdown(href, unsafe_allow_html=True)
 
 # Streamlit app
@@ -161,14 +161,10 @@ def main():
 
         if st.button("Process the file"):
             process_csv(df)
-
-        if st.button("Policy Generation"):
             policy_generator(pd.read_csv("process_result.csv"), topic_level)
-
-        if st.button("Summary Generation"):
+            st.write("Generating Summary...")
             summary_generator(pd.read_csv('policy_result.csv', usecols=['Policy', topic_level]),topic_level)
-
-        if st.button("Policy Document Generation"):
+            st.write("Generating Policy...")
             document_generator(pd.read_csv("summary_result.csv"))
 
 if __name__ == "__main__":
