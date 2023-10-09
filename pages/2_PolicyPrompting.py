@@ -38,6 +38,7 @@ def generation(prompt,target):
     doc.save('Policy.doc')
     result=convert_doc_to_text('Policy.doc')
     st.write(result)
+    st.cache_resource.clear()
     
     with open('Policy.doc', 'rb') as f:
         doc_data = f.read()
