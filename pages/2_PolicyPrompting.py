@@ -24,15 +24,14 @@ chat_llm = ChatOpenAI(temperature=0.0)
 st.title("Policy Prompting")
 
 @st.cache_resource
-def generation(prompt):
+def generation(prompt,target):
     if os.path.exists('Policy.doc'):
         doc = docx.Document('Policy.doc')
     else:
         doc = docx.Document()
     title_template = prompt
-    topic=" "
     prompt = ChatPromptTemplate.from_template(template=title_template)
-    messages = prompt.format_messages(topic=topic)
+    messages = prompt.format_messages(topic=target)
     response = chat_llm(messages)
     content = str(response.content)
     doc.add_paragraph(content)
@@ -54,12 +53,15 @@ def convert_doc_to_text(doc_file):
     text = docx2txt.process(doc_file)
     return text
 
+target=st.text_area("Write the Requirements")
+
+# Text area for user input
 st.subheader("User Prompt")
 prompt = st.text_area("Enter your Prompt here:")
 
 # Save user input to a file
 if st.button("Submit"):
-    generation(prompt)
+    generation(prompt,target)
     st.cache_resource.clear()
     
 
