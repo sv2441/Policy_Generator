@@ -54,7 +54,7 @@ def convert_doc_to_text(doc_file):
     text = docx2txt.process(doc_file)
     return text
 
-target=st.text_area("Write the Requirements")
+target=" "
 
 # Text area for user input
 st.subheader("User Prompt")
