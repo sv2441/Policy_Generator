@@ -19,20 +19,20 @@ load_dotenv()
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 # os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
-# Initialize chat model
 chat_llm = ChatOpenAI(temperature=0.0)
 
 st.title("Policy Prompting")
 
 
-def generation(prompt,target):
-    if os.path.exists('Policy_Document.doc'):
-        doc = docx.Document('Policy_Document.doc')
+def generation(prompt):
+    if os.path.exists('Policy.doc'):
+        doc = docx.Document('Policy.doc')
     else:
         doc = docx.Document()
     title_template = prompt
+    topic=" "
     prompt = ChatPromptTemplate.from_template(template=title_template)
-    messages = prompt.format_messages(topic=target)
+    messages = prompt.format_messages(topic=topic)
     response = chat_llm(messages)
     content = str(response.content)
     doc.add_paragraph(content)
@@ -52,28 +52,13 @@ def convert_doc_to_text(doc_file):
     text = docx2txt.process(doc_file)
     return text
 
-# Upload a DOC file
-st.sidebar.header("Upload a Policy file")
-doc_file = st.sidebar.file_uploader("Choose a DOC file", type=[".doc", ".docx"])
-
-# Main content area
-st.subheader("Policy Document")
-if doc_file is not None:
-    # Convert the DOC to text
-    target = convert_doc_to_text(doc_file)
-    st.write(target)
-else:
-    st.write("Upload a DOC file to convert it to text.")
-
-target=st.text_area("Write the Requirements")
-
-# Text area for user input
 st.subheader("User Prompt")
 prompt = st.text_area("Enter your Prompt here:")
 
 # Save user input to a file
 if st.button("Submit"):
-    generation(prompt,target)
+    generation(prompt)
     
+
 
 
