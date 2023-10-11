@@ -12,6 +12,7 @@ from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from dotenv import load_dotenv
+import pyperclip
 
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
@@ -133,6 +134,7 @@ def document_generator(df):
     messages = prompt.format_messages(topic=contents)
     response = chat_llm(messages)
     content = str(response.content)
+    pyperclip.copy(content)
     doc.add_paragraph(content)
     doc.save('Policy_Document.doc')
 
