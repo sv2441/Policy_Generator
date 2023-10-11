@@ -24,21 +24,23 @@ chat_llm = ChatOpenAI(temperature=0.0)
 st.title("Policy Prompting")
 
 @st.cache_resource
-def generation(prompt,target):
+def generation(prompt):
     if os.path.exists('Policy.doc'):
         doc = docx.Document('Policy.doc')
     else:
         doc = docx.Document()
     title_template = prompt
+    topic=" "
     prompt = ChatPromptTemplate.from_template(template=title_template)
-    messages = prompt.format_messages(topic=target)
+    messages = prompt.format_messages(topic=topic)
     response = chat_llm(messages)
     content = str(response.content)
+    # st.code(content, language="python")
+    # pyperclip.copy(content)
+    st.write(content)
     doc.add_paragraph(content)
     doc.save('Policy.doc')
-    result=convert_doc_to_text('Policy.doc')
-    st.write(result)
-    st.cache_resource.clear()
+    
     
     with open('Policy.doc', 'rb') as f:
         doc_data = f.read()
@@ -46,25 +48,19 @@ def generation(prompt,target):
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="policy.doc">Download Result</a>'
     st.markdown(href, unsafe_allow_html=True)
     
- 
-
+    
 # Function to convert DOC to Text
 @st.cache_resource
 def convert_doc_to_text(doc_file):
     text = docx2txt.process(doc_file)
     return text
 
-target=" "
-
-# Text area for user input
 st.subheader("User Prompt")
 prompt = st.text_area("Enter your Prompt here:")
 
 # Save user input to a file
 if st.button("Submit"):
-    generation(prompt,target)
-    st.cache_resource.clear()
-    
+    generation(prompt)
 
 
 
