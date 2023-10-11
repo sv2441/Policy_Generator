@@ -19,9 +19,6 @@ os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 # os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
 # Initialize chat model
-chat_llm = ChatOpenAI(temperature=0.0)
-
-# Function to convert dictionary to CSV
 def dict_to_csv(data, filename, append=False):
     mode = 'a' if append else 'w'
     with open(filename, mode, newline='') as csvfile:
@@ -53,7 +50,6 @@ def process_csv(df):
     href = f'<a href="data:file/csv;base64,{b64}" download="modified.csv">Download modified CSV file</a>'
     st.markdown(href, unsafe_allow_html=True)
 
-    # Show a preview of the modified data
     st.dataframe(df)
     df.to_csv('process_result.csv')
 
@@ -82,7 +78,7 @@ def policy_generator(df, topic_column):
     result = pd.read_csv("policy.csv", names=['Policy'])
     final = pd.concat([df, result], axis=1)
     final.to_csv("policy_result.csv")
-    st.dataframe(final)
+    # st.dataframe(final)
 
 # Function to process the summary generation
 def summary_generator(df, topic_column):
@@ -114,9 +110,8 @@ def summary_generator(df, topic_column):
     result = pd.read_csv("summary.csv", names=['Summary'])
     final = pd.concat([new_df, result], axis=1)
     final.to_csv("summary_result.csv")
-    st.dataframe(final)
+    # st.dataframe(final)
 
-# Function to process the Document generation
 def document_generator(df):
     contents = combine_column_to_paragraph(df, 'Summary')
 
@@ -135,14 +130,21 @@ def document_generator(df):
     response = chat_llm(messages)
     content = str(response.content)
     pyperclip.copy(content)
+    st.write(content)
     doc.add_paragraph(content)
     doc.save('Policy_Document.doc')
+    
 
+    # Add a button to download the policy document
     with open('Policy_Document.doc', 'rb') as f:
         doc_data = f.read()
     b64 = base64.b64encode(doc_data).decode()
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="Policy_Document.doc">Download Result</a>'
     st.markdown(href, unsafe_allow_html=True)
+
+    # # Add a button to copy the text of the policy document
+    # if st.button("Copy Policy Document Text"):
+    #     st.write(content)
 
 # Streamlit app
 def main():
@@ -165,7 +167,7 @@ def main():
             process_csv(df)
             policy_generator(pd.read_csv("process_result.csv"), topic_level)
             st.write("Generating Summary...")
-            summary_generator(pd.read_csv('policy_result.csv', usecols=['Policy', topic_level]),topic_level)
+            summary_generator(pd.read_csv('policy_result.csv', usecols=['Policy', topic_level]), topic_level)
             st.write("Generating Policy...")
             document_generator(pd.read_csv("summary_result.csv"))
 
